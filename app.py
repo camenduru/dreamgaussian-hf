@@ -83,7 +83,7 @@ if __name__ == "__main__":
                     examples=examples_full,  # NOTE: elements must match inputs list!
                     inputs=[image_block],
                     outputs=[image_block],
-                    cache_examples=False,
+                    cache_examples=True,
                     label='Examples (click one of the images below to start)',
                     examples_per_page=40
                 )
@@ -104,4 +104,6 @@ if __name__ == "__main__":
                                                                                               obj3d_stage1]).success(
                 optimize_stage_2, inputs=[elevation_slider], outputs=[obj3d])
 
-    demo.launch(enable_queue=True)
+    # demo.launch(enable_queue=True)
+    demo.queue(max_size=9)  # <-- Sets up a queue with default parameters
+    demo.launch()
