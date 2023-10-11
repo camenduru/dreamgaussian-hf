@@ -104,4 +104,4 @@ if __name__ == "__main__":
                                                                                               obj3d_stage1]).success(
                 optimize_stage_2, inputs=[elevation_slider], outputs=[obj3d])
 
-    demo.queue().launch(share=True)
+    demo.launch(enable_queue=True)
