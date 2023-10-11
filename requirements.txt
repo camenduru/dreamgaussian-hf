@@ -15,6 +15,7 @@ torch
 einops
 plyfile
 pygltflib
+torchvision
 
 # for gui
 dearpygui
