@@ -39,3 +39,5 @@ gradio
 
 -e git+https://github.com/NVlabs/nvdiffrast.git@main#egg=nvdiffrast
 -e git+https://github.com/ashawkey/kiuikit.git@main#egg=kiui
+-e git+file:///home/user/app/simple-knn#egg=simple-knn
+-e git+file:///home/user/app/diff-gaussian-rasterization#egg=diff-gaussian-rasterization
