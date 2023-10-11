@@ -3,8 +3,8 @@ import os
 from PIL import Image
 import subprocess
 
-os.system('pip install -e ./simple-knn')
-os.system('pip install -e ./diff-gaussian-rasterization')
+# os.system('pip install -e ./simple-knn')
+# os.system('pip install -e ./diff-gaussian-rasterization')
 
 # check if there is a picture uploaded or selected
 def check_img_input(control_image):
