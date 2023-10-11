@@ -11,6 +11,10 @@ def check_img_input(control_image):
     if control_image is None:
         raise gr.Error("Please select or upload an input image")
 
+def optimize(image_block: Image.Image, preprocess_chk=True, elevation_slider=0):
+    stage_1_output = optimize_stage_1(image_block, preprocess_chk, elevation_slider)
+    stage_2_output = optimize_stage_2(elevation_slider)
+    return stage_1_output, stage_2_output
 
 def optimize_stage_1(image_block: Image.Image, preprocess_chk: bool, elevation_slider: float):
     if not os.path.exists('tmp_data'):
@@ -52,6 +56,10 @@ if __name__ == "__main__":
     </div>
     We present DreamGausssion, a 3D content generation framework that significantly improves the efficiency of 3D content creation. 
     '''
+
+    _DUPLICATE ='''
+    [![Duplicate this Space](https://huggingface.co/datasets/huggingface/badges/resolve/main/duplicate-this-space-md.svg)](https://huggingface.co/spaces/jiawei011/dreamgaussian?duplicate=true)
+    '''
     _IMG_USER_GUIDE = "Please upload an image in the block above (or choose an example above) and click **Generate 3D**."
 
     # load images in 'data' folder as examples
@@ -65,14 +73,14 @@ if __name__ == "__main__":
         with gr.Row():
             with gr.Column(scale=1):
                 gr.Markdown('# ' + _TITLE)
-            # with gr.Column(scale=0):
-            #     gr.DuplicateButton(value='Duplicate Space for private use',
-            #                        elem_id='duplicate-button')
+            with gr.Column(scale=0):
+                gr.Markdown(_DUPLICATE)
         gr.Markdown(_DESCRIPTION)
 
         # Image-to-3D
         with gr.Row(variant='panel'):
-            with gr.Column(scale=5):
+            left_column = gr.Column(scale=5)
+            with left_column:
                 image_block = gr.Image(type='pil', image_mode='RGBA', height=290, label='Input image', tool=None)
 
                 elevation_slider = gr.Slider(-90, 90, value=0, step=1, label='Estimated elevation angle')
@@ -82,20 +90,24 @@ if __name__ == "__main__":
                 preprocess_chk = gr.Checkbox(True,
                                              label='Preprocess image automatically (remove background and recenter object)')
 
+
+
+            with gr.Column(scale=5):
+                obj3d_stage1 = gr.Model3D(clear_color=[0.0, 0.0, 0.0, 0.0], label="3D Model (Stage 1)")
+                obj3d = gr.Model3D(clear_color=[0.0, 0.0, 0.0, 0.0], label="3D Model (Final)")
+
+            with left_column:
                 gr.Examples(
                     examples=examples_full,  # NOTE: elements must match inputs list!
                     inputs=[image_block],
-                    outputs=[image_block],
-                    cache_examples=False,
+                    outputs=[obj3d_stage1, obj3d],
+                    fn=optimize,
+                    cache_examples=True,
                     label='Examples (click one of the images below to start)',
                     examples_per_page=40
                 )
                 img_run_btn = gr.Button("Generate 3D")
                 img_guide_text = gr.Markdown(_IMG_USER_GUIDE, visible=True)
-
-            with gr.Column(scale=5):
-                obj3d_stage1 = gr.Model3D(clear_color=[0.0, 0.0, 0.0, 0.0], label="3D Model (Stage 1)")
-                obj3d = gr.Model3D(clear_color=[0.0, 0.0, 0.0, 0.0], label="3D Model (Final)")
 
             # if there is an input image, continue with inference
             # else display an error message
