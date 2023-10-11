@@ -65,6 +65,9 @@ if __name__ == "__main__":
         with gr.Row():
             with gr.Column(scale=1):
                 gr.Markdown('# ' + _TITLE)
+            with gr.Column(scale=0):
+                gr.DuplicateButton(value='Duplicate Space for private use',
+                                   elem_id='duplicate-button')
         gr.Markdown(_DESCRIPTION)
 
         # Image-to-3D
@@ -83,7 +86,7 @@ if __name__ == "__main__":
                     examples=examples_full,  # NOTE: elements must match inputs list!
                     inputs=[image_block],
                     outputs=[image_block],
-                    cache_examples=True,
+                    cache_examples=False,
                     label='Examples (click one of the images below to start)',
                     examples_per_page=40
                 )
