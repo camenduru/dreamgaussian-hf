@@ -65,9 +65,9 @@ if __name__ == "__main__":
         with gr.Row():
             with gr.Column(scale=1):
                 gr.Markdown('# ' + _TITLE)
-            with gr.Column(scale=0):
-                gr.DuplicateButton(value='Duplicate Space for private use',
-                                   elem_id='duplicate-button')
+            # with gr.Column(scale=0):
+            #     gr.DuplicateButton(value='Duplicate Space for private use',
+            #                        elem_id='duplicate-button')
         gr.Markdown(_DESCRIPTION)
 
         # Image-to-3D
