@@ -37,7 +37,7 @@ rembg[gpu,cli]
 gradio
 
 
--e git+https://github.com/NVlabs/nvdiffrast/
--e git+https://github.com/ashawkey/kiuikit
--e ./simple-knn
--e ./diff-gaussian-rasterization
+-e git+https://github.com/NVlabs/nvdiffrast.git@main#egg=nvdiffrast
+-e git+https://github.com/ashawkey/kiuikit.git@main#egg=kiui
+-e ./simple-knn#egg=simple_knn
+-e ./diff-gaussian-rasterization#egg=diff_gaussian_rasterization
