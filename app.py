@@ -120,5 +120,5 @@ if __name__ == "__main__":
                 optimize_stage_2, inputs=[elevation_slider], outputs=[obj3d])
 
     # demo.launch(enable_queue=True)
-    demo.queue(max_size=20)  # <-- Sets up a queue with default parameters
+    demo.queue(max_size=10)  # <-- Sets up a queue with default parameters
     demo.launch()
