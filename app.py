@@ -2,6 +2,7 @@ import gradio as gr
 import os
 from PIL import Image
 import subprocess
+import hashlib
 
 os.system('pip install -e ./simple-knn')
 os.system('pip install -e ./diff-gaussian-rasterization')
@@ -13,36 +14,40 @@ def check_img_input(control_image):
 
 def optimize(image_block: Image.Image, preprocess_chk=True, elevation_slider=0):
     stage_1_output = optimize_stage_1(image_block, preprocess_chk, elevation_slider)
-    stage_2_output = optimize_stage_2(elevation_slider)
+    stage_2_output = optimize_stage_2(image_block, elevation_slider)
     return stage_1_output, stage_2_output
+
 
 def optimize_stage_1(image_block: Image.Image, preprocess_chk: bool, elevation_slider: float):
     if not os.path.exists('tmp_data'):
         os.makedirs('tmp_data')
+
+    img_hash = hashlib.sha256(image_block.tobytes()).hexdigest()
     if preprocess_chk:
         # save image to a designated path
-        image_block.save('tmp_data/tmp.png')
+        image_block.save(f'tmp_data/{img_hash}.png')
 
         # preprocess image
-        subprocess.run([f'python process.py tmp_data/tmp.png'], shell=True)
+        subprocess.run([f'python process.py tmp_data/{img_hash}.png'], shell=True)
     else:
-        image_block.save('tmp_data/tmp_rgba.png')
+        image_block.save(f'tmp_data/{img_hash}_rgba.png')
 
     # stage 1
     subprocess.run([
-                       f'python main.py --config configs/image.yaml input=tmp_data/tmp_rgba.png save_path=tmp mesh_format=glb elevation={elevation_slider} force_cuda_rast=True'],
+                       f'python main.py --config configs/image.yaml input=tmp_data/{img_hash}_rgba.png save_path={img_hash} mesh_format=glb elevation={elevation_slider} force_cuda_rast=True'],
                    shell=True)
 
-    return f'logs/tmp_mesh.glb'
+    return f'logs/{img_hash}_mesh.glb'
 
 
-def optimize_stage_2(elevation_slider: float):
+def optimize_stage_2(image_block: Image.Image, elevation_slider: float):
+    img_hash = hashlib.sha256(image_block.tobytes()).hexdigest()
     # stage 2
     subprocess.run([
-                       f'python main2.py --config configs/image.yaml input=tmp_data/tmp_rgba.png save_path=tmp mesh_format=glb elevation={elevation_slider} force_cuda_rast=True'],
+                       f'python main2.py --config configs/image.yaml input=tmp_data/{img_hash}_rgba.png save_path={img_hash} mesh_format=glb elevation={elevation_slider} force_cuda_rast=True'],
                    shell=True)
 
-    return f'logs/tmp.glb'
+    return f'logs/{img_hash}.glb'
 
 
 if __name__ == "__main__":
@@ -117,7 +122,7 @@ if __name__ == "__main__":
                                                                                                   elevation_slider],
                                                                                           outputs=[
                                                                                               obj3d_stage1]).success(
-                optimize_stage_2, inputs=[elevation_slider], outputs=[obj3d])
+                optimize_stage_2, inputs=[image_block, elevation_slider], outputs=[obj3d])
 
     # demo.launch(enable_queue=True)
     demo.queue(max_size=10)  # <-- Sets up a queue with default parameters
